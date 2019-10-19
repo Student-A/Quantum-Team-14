@@ -1,0 +1,40 @@
+N 5
+
+steps 500
+
+points 2
+
+i 1 4 
+
+j 1 4 
+
+c 0 2 3 1
+
+real_value 1 0 1 0
+
+complex_value 0 1 0 1
+
+
+refI 1
+
+refJ 1
+
+dim 0
+
+i_0
+
+j_0
+
+m_options 0
+
+vn_x 0
+
+vn_y 0
+
+vn_m_info 0
+
+q_discord 0
+
+ent_form 0
+
+gnu_plot 0
