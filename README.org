@@ -1,0 +1,7 @@
+
+* About
+This is a project for the "Quantum Futures Hackathon Event". The theme is "Classical Vs. Quantum". The application is to Random Walks Vs. Quantum Random Walks.
+
+* Team members
+Kiran, Stephen, Aiman, Saj
+
