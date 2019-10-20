@@ -65,8 +65,27 @@ class Game:
         # draw background
         self.display.blit(self.groundBg, (0, 0))
 
+        # character trace
+        if len(self.character.movementHistory) >= 1:
+            pygame.draw.line(self.display, (0, 255, 0),
+                             [self.character.position[0]+self.cellsize[0]/2, self.character.position[1]+self.cellsize[1]/2],
+                             [self.character.movementHistory[0][0]+self.cellsize[0]/2,
+                              self.character.movementHistory[0][1]+self.cellsize[1]/2]
+            )
+        if len(self.character.movementHistory) >= 2:
+            for i in range(len(self.character.movementHistory)-1):
+                pygame.draw.line(self.display,
+                                 (0, 150*(len(self.character.movementHistory)-i)/len(self.character.movementHistory)+50, 0),
+                                [self.character.movementHistory[i][0]+self.cellsize[0]/2,
+                                  self.character.movementHistory[i][1]+self.cellsize[1]/2],
+                                 [self.character.movementHistory[i+1][0]+self.cellsize[0]/2,
+                                  self.character.movementHistory[i+1][1]+self.cellsize[1]/2]
+                )
+        
+        
         # draw character
         self.display.blit(self.character.getImage(), self.character.position)
+        # character "wrap around" when moving near screen edges
         if self.character.position[0]+self.cellsize[0] > WIN_W:
             self.display.blit(self.character.getImage(), ((self.character.position[0]+self.cellsize[0]) % WIN_W - self.cellsize[0], self.character.position[1]))
 
@@ -80,6 +99,7 @@ class Game:
             self.display.blit(self.character.getImage(), (self.character.position[0], self.character.position[1] + WIN_H))
 
         
+        # display proximity cue    
         if self.isProximityCue:
             self.cueFilter.fill((*self.proximityCueColour, 255*(0.5 + 0.5*math.sin(self.currentProximityPhase))))
             self.display.blit(self.cueFilter, (0, 0))
@@ -117,10 +137,12 @@ class Character:
         
         self.isMoving = False
 
+        self.movementHistory = []
+        self.movementHistorySize = 5
+        
     def getCellPosition(self):
         return [(self.position[0]//self.game.cellsize[0]),
                 (self.position[1]//self.game.cellsize[1])]
-
     
     def loadResources(self, w, h):
         self.image = pygame.transform.scale(pygame.image.load(self.imagedir), (w, h))
@@ -133,9 +155,9 @@ class Character:
 
     def triggerMovementToCell(self, axis, position1d, velocity=5):
         if axis == 'x':
-            self.triggerMovement('x', (position1d - self.position[0]) * self.game.cellsize[0], velocity)
+            self.triggerMovement('x', (position1d - self.getCellPosition()[0]) * self.game.cellsize[0], velocity)
         else:
-            self.triggerMovement('y', (position1d - self.position[1]) * self.game.cellsize[1], velocity)
+            self.triggerMovement('y', (position1d - self.getCellPosition()[1]) * self.game.cellsize[1], velocity)
             
     def triggerMovementCells(self, axis, cell_distance, velocity=5):
         if axis == 'x':
@@ -145,10 +167,19 @@ class Character:
             
     # axis is "x" or "y"
     def triggerMovement(self, axis, distance, velocity=5):
+        if self.isMoving:
+            return
+        
         self.isMoving = True
         self.distanceToMove = distance
         self.movementVelocity = velocity
 
+   
+        if len(self.movementHistory) > self.movementHistorySize:
+            self.movementHistory = [self.position[:]] + self.movementHistory[:-1]
+        else:
+            self.movementHistory = [self.position[:]] + self.movementHistory[:]
+            
         if axis == "x":
             self.orientation = ["left", "right"][int(distance > 0)]
             
@@ -166,6 +197,7 @@ class Character:
                     self.position[[0, 1][{"left": 0, "up": 1}[self.orientation]]] += max(-self.movementVelocity, self.distanceToMove)
                     self.distanceToMove = min(0, self.distanceToMove + abs(self.movementVelocity))
 
+                
                 if self.distanceToMove == 0:
                     self.position[0] = self.position[0]%WIN_W
                     self.position[1] = self.position[1]%WIN_H
