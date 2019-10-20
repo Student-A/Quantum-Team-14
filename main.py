@@ -64,7 +64,7 @@ class Game:
         self.minusCoinButton = MinusButton((740, 380), (20, 20), (255, 255, 0))
 
         self.coinsToFlipText = Text("Coins to flip next move:", (610, 350), (255, 255, 255), self.largeFont)
-        self.coinsWagerText = Text("0", (690, 380), (255, 0, 0), self.hugeFont)
+        self.coinsWagerText = Text("2", (690, 380), (255, 0, 0), self.hugeFont)
         
         self.movementModeText = Text("Movement mode:", (610, 260), (255, 255, 255), self.largeFont)
 
