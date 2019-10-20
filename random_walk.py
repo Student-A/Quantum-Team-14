@@ -70,3 +70,4 @@ def show_distribution_plot():
 
 print(get_point(5, 500))
 show_distribution_plot()
+

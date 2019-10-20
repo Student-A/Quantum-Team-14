@@ -19,7 +19,7 @@ class Game:
         pygame.display.set_caption("Treasure Hunting in the Quantum Regime")
         self.clock = pygame.time.Clock()
 
-        self.character = Character(r'./res/char.png', "Classical")
+        self.character = Character(r'./res/char.png', "Classical", self)
         
         self.loadResources()
     def loadResources(self):
@@ -53,13 +53,13 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if not self.character.isMoving:
                     if event.key == pygame.K_LEFT:
-                        self.character.triggerMovement("x", -self.cellsize[0], 5)
+                        self.character.triggerMovementCells("x", -1, 5)
                     if event.key == pygame.K_RIGHT:
-                        self.character.triggerMovement("x", self.cellsize[0], 5)
+                        self.character.triggerMovementCells("x", 1, 5)
                     if event.key == pygame.K_UP:
-                        self.character.triggerMovement("y", -self.cellsize[1], 5)
+                        self.character.triggerMovementCells("y", -1, 5)
                     if event.key == pygame.K_DOWN:
-                        self.character.triggerMovement("y", self.cellsize[1], 5)
+                        self.character.triggerMovementCells("y", 1, 5)
                         
     def renderGraphics(self):
         # draw background
@@ -72,6 +72,12 @@ class Game:
 
         if (self.character.position[1]+self.cellsize[1]) > WIN_H:
             self.display.blit(self.character.getImage(), (self.character.position[0], (self.character.position[1]+self.cellsize[1]) % WIN_H - self.cellsize[1]))
+
+        if self.character.position[0] < 0:
+            self.display.blit(self.character.getImage(), (self.character.position[0] + WIN_W, self.character.position[1]))
+
+        if self.character.position[1] < 0:
+            self.display.blit(self.character.getImage(), (self.character.position[0], self.character.position[1] + WIN_H))
 
         
         if self.isProximityCue:
@@ -99,7 +105,7 @@ class Game:
             self.clock.tick(self.FPS)
 
 class Character:
-    def __init__(self, imagedir, movementType, position = [0, 0]):
+    def __init__(self, imagedir, movementType, game, position = [0, 0]):
         self.image = None
         self.rect = None
         self.orientation = "right"
@@ -107,8 +113,15 @@ class Character:
         self.imagedir = imagedir
         self.movementType = movementType
 
-        self.isMoving = False
+        self.game = game
         
+        self.isMoving = False
+
+    def getCellPosition(self):
+        return [(self.position[0]//self.game.cellsize[0]),
+                (self.position[1]//self.game.cellsize[1])]
+
+    
     def loadResources(self, w, h):
         self.image = pygame.transform.scale(pygame.image.load(self.imagedir), (w, h))
         self.images = {"left": pygame.transform.rotate(self.image, 180),
@@ -118,8 +131,20 @@ class Character:
         
         self.rect = self.image.get_rect()
 
+    def triggerMovementToCell(self, axis, position1d, velocity=5):
+        if axis == 'x':
+            self.triggerMovement('x', (position1d - self.position[0]) * self.game.cellsize[0], velocity)
+        else:
+            self.triggerMovement('y', (position1d - self.position[1]) * self.game.cellsize[1], velocity)
+            
+    def triggerMovementCells(self, axis, cell_distance, velocity=5):
+        if axis == 'x':
+            self.triggerMovement('x', cell_distance * self.game.cellsize[0], velocity)
+        else:
+            self.triggerMovement('y', cell_distance * self.game.cellsize[1], velocity) 
+            
     # axis is "x" or "y"
-    def triggerMovement(self, axis, distance, velocity=10):
+    def triggerMovement(self, axis, distance, velocity=5):
         self.isMoving = True
         self.distanceToMove = distance
         self.movementVelocity = velocity
@@ -142,6 +167,8 @@ class Character:
                     self.distanceToMove = min(0, self.distanceToMove + abs(self.movementVelocity))
 
                 if self.distanceToMove == 0:
+                    self.position[0] = self.position[0]%WIN_W
+                    self.position[1] = self.position[1]%WIN_H
                     self.isMoving = False
                     
                     
