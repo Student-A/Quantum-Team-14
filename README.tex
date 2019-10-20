@@ -1,4 +1,4 @@
-% Created 2019-10-20 So 11:48
+% Created 2019-10-20 So 12:34
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -16,6 +16,7 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \tolerance=1000
+\usepackage{mathtools}
 \author{Aiman}
 \date{\today}
 \title{README}
@@ -28,23 +29,25 @@
 \maketitle
 \tableofcontents
 
+
+
 \section{About}
 \label{sec-1}
 This is a project for the "Quantum Futures Hackathon" event at CERN from Saturday afternoon 19th to Sunday afternoon 20th. The theme is "Classical Vs. Quantum". 
 In a classical random walk, a coin that lands with probability $p$ on heads and a probability $1 - p$ on tails is flipped. Upon the result of different options, a "walker" will walk either left or right. After a large number of coin flips, the destination of a walker landing on a point at $n$ unit distances away from the starting point is, in the case of a fair coin, gaussian. 
 
-Similar of character is the concept of random walks in the quantum world - quantum random walks. Here, one starts with a ground state of the form $\left|\psi \right> =  a\left|\leftarrow, 0\right> + b\left| \rightarrow, 0 \right>$. Here, the walker will walk in the next time unit to the right with probability $a^2$ and to the left with probability $b^2$ (a la the Born rule). A "coin flip" will send a measured state that has "collapsed" to an eigenstate to a state with equal probability of being in either one of the directions. Moreover, for probability conservation, the evolution needs to be unitary. This suggests using the Hadamard operator for as our "quantum coin" which satisfies both of these conditions:
-\begin{align*}
-   \hat{F} = \frac{1}{\sqrt{2}}\begin{matrix} 1 & 1 \\ 1 & -1 \end{matirx}
-\end{align*}  
+Similar of character is the concept of random walks in the quantum world - quantum random walks. Here, one starts with a ground state of the form $\left|\psi \right> =  a\left|\leftarrow, 0\right> + b\left| \rightarrow, 0 \right>$. Here, the walker will walk in the next time unit to the right with probability $a^2$ and to the left with probability $b^2$ (a la the Born rule). A "coin flip" will send a measured state that has "collapsed" to an eigenstate to a state with equal probability of being in either one of the directions. Moreover, for probability conservation, the evolution needs to be unitary. This suggests using the Hadamard operator for as our "quantum coin" which satisfies both of these conditions.
+
 For movement, we will define the translation operator:
 \begin{align*}
  \hat{S}\left|\leftarrow, n \right> = \left|\leftarrow, n-1 \right>\\
  \hat{S}\left|\rightarrow, n \right> = \left|\rightarrow, n+1 \right>
 \end{align*}
-Given an initial state, a \emph{quantum random walk} is then a sequence of flipping the quantum coin by applying $\hat{F}$ and moving by applying $\hat{S}$.
+Given an initial state, a \emph{quantum random walk} is then a sequence of flipping the quantum coin by applying $\hat{F}$ and moving by applying $\hat{S}$. The result ends up being different from classical, not just in distribution, but also in the fact that it shows some bias due the additional "spin" degree of freedom (left or right) that comes with the location of the walker. Overall, the distribution seems to flow in the direction of this spin.
 
-\section{Team members}
+This application is a game that simulates this in a "find the treasure" kind of game; where a human compete against a classical or quantum random walker  that would flip classical/quantum coins respectively. After each move, the player recieves visual feedback (spectrum that ranges from red for "hot" and blue for "cold") on the proximity of the player to the treasure. The game ends immediately if the walker lands on the treasure, or once all the coins are used, in which case the winner is determined depending on who is closest to the treasure.
+
+\section{team members}
 \label{sec-2}
 Kiran, Stephen, Aiman, Saj
 % Emacs 25.2.2 (Org mode 8.2.10)
